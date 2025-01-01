@@ -128,10 +128,10 @@ class HBNBCommand(cmd.Cmd):
         arguments = args.partition(' ')[2].split(' ')
         for arg in arguments:
             if "=" in arg:
-                attr_name, attr_value = arg.split("=",1)
+                attr_name, attr_value = arg.split("=", 1)
 
             if attr_value.startswith('"') and attr_value.endswith('"'):
-                attr_value = attr_value[1:-1].replace('_',' ')
+                attr_value = attr_value[1:-1].replace('_', ' ')
 
             elif attr_value.isdigit():
                 attr_value = int(attr_value)
@@ -340,6 +340,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
