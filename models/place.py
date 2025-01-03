@@ -3,8 +3,7 @@
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, ForeignKey, Integer, Float, Table
 from sqlalchemy.orm import relationship
-from models.amenity import Amenity
-
+from os import getenv
 
 place_amenity = Table("place_amenity", Base.metadata,
                       Column("place_id", String(60),
@@ -32,34 +31,39 @@ class Place(BaseModel, Base):
     longitude = Column(Float, nullable=True)
     amenity_ids = []
 
-    """DBStorage relationship"""
-    reviews = relationship(
-        "Review",
-        backref="place",
-        cascade="all, delete, delete-orphan"
-    )
+    if getenv("HBNB_TYPE_STORAGE") == 'db':
+        """DBStorage relationship"""
+        reviews = relationship(
+            "Review",
+            backref="place",
+            cascade="all, delete, delete-orphan")
 
-    @property
-    def reviews(self):
-        """FileStorage relationship"""
-        from models import storage
-        from models.review import Review
+        amenities = relationship("Amenity", secondary=place_amenity,
+                                 viewonly=False,
+                                 back_populates="place_amenities")
 
-        all_review = storage.all(Review)
+    else:
+        @property
+        def reviews(self):
+            """FileStorage relationship"""
+            from models import storage
+            from models.review import Review
+            all_review = storage.all(Review)
 
-        return [
-            review for review in all_review.values()
-            if review.place_id == self.id
+            return [
+                review for review in all_review.values()
+                if review.place_id == self.id
             ]
 
-    @property
-    def amenities(self):
-        """ Returns list of amenity ids """
-        return (self.amenity_ids)
+        @property
+        def amenities(self):
+            """ Returns list of amenity ids """
+            return (self.amenity_ids)
 
-    @property.setter
-    def amenities(self, obj=None):
-        """handles append method for adding an Amenity.id
-        to the attribute amenity_ids"""
-        if type(obj) is Amenity and obj.id not in self.amenity_ids:
-            self.amenity_ids.append(obj.id)
+        @amenities.setter
+        def amenities(self, obj=None):
+            """handles append method for adding an Amenity.id
+            to the attribute amenity_ids"""
+            from models.amenity import Amenity
+            if type(obj) is Amenity and obj.id not in self.amenity_ids:
+                self.amenity_ids.append(obj.id)
