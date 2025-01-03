@@ -113,43 +113,40 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, arg):
+    def do_create(self, args):
         """ Create an object of any class"""
-        try:
-            cls_ = arg.split(" ")[0]
+        cls_ = args.partition(' ')[0]
 
-            if len(cls_) == 0:
-                print("** class name missing **")
-                return
-            elif cls_ not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-
-            Dict1 = {}
-            commands = arg.split(" ")
-            for i in range(1, len(commands)):
-                key = commands.split("=")[0]
-                value = commands.split("=")[1]
-
-                if value.startswith('"'):
-                    value = value.strip('"').replace('_', ' ')
-                else:
-                    try:
-                        value = eval(value)
-                    except (SyntaxError, NameError):
-                        continue
-                Dict1[key] = value
-
-            if Dict1 == {}:
-                new_instance = eval(cls_)()
-            else:
-                new_instance = eval(cls_)(**Dict1)
-            storage.new(new_instance)
-            print(new_instance.id)
-            storage.save()
-        except ValueError:
-            print(ValueError)
+        if not cls_:
+            print("** class name missing **")
             return
+        elif cls_ not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return
+
+        new_instance = HBNBCommand.classes[cls_]()
+
+        arguments = args.partition(' ')[2].split(' ')
+        for arg in arguments:
+            if "=" in arg:
+                attr_name, attr_value = arg.split("=", 1)
+
+            if attr_value.startswith('"') and attr_value.endswith('"'):
+                attr_value = attr_value[1:-1].replace('_', ' ')
+
+            elif attr_value.isdigit():
+                attr_value = int(attr_value)
+
+            else:
+                try:
+                    attr_value = float(attr_value)
+                except ValueError:
+                    continue
+
+            setattr(new_instance, attr_name, attr_value)
+
+        new_instance.save()
+        print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
