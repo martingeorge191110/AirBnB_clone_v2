@@ -5,16 +5,16 @@ from models.state import State
 from models import storage
 
 
-app = Flask(__name__)
+server = Flask(__name__)
 
 
-@app.teardown_appcontext
+@server.teardown_appcontext
 def close_session(exception):
     storage.close()
 
 
-@app.route("/states", strict_slashes=False)
-@app.route("/states/<id>", strict_slashes=False)
+@server.route("/states", strict_slashes=False)
+@server.route("/states/<id>", strict_slashes=False)
 def list_states(id=None):
     """renders all states in html"""
     states = storage.all(State)
@@ -32,4 +32,4 @@ def list_states(id=None):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    server.run(host="0.0.0.0", port=5000)
