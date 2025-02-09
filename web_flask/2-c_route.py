@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """script that starts Flask application"""
 
-from flask import Flask
+from flask import Flask, request
 
 server = Flask(__name__)
 
@@ -15,8 +15,14 @@ def hello_hbnb():
 @server.route("/hbnb", strict_slashes=False)
 def hbnb():
     """displays HBNB in /hbnb route """
-    return "HBNB"
+    return ("HBNB")
 
+
+@server.route("/c/<text>", strict_slashes=False)
+def c_text(text):
+    """display “C ” followed by the value of the text variable"""
+    textFormated = text.replace('_', ' ')
+    return (f"C {textFormated}")
 
 if __name__ == "__main__":
     server.run(host="0.0.0.0", port=5000)
