@@ -38,7 +38,6 @@ def number_n(n):
     return (f"{str(n)} is a number")
 
 
-
 @server.route("/number_template/<int:n>", strict_slashes=False)
 def number_template(n):
     """renders html page with “Number: n” only if n is an integer"""
@@ -48,8 +47,8 @@ def number_template(n):
 @server.route("/number_odd_or_even/<int:n>", strict_slashes=False)
 def number_odd_or_even(n):
     """renders html page with “Number: n even|odd” only if n is an integer"""
-    return (render_template("6-number_odd_or_even.html", n=n)
-)
+    return (render_template("6-number_odd_or_even.html", n=n))
+
 
 if __name__ == "__main__":
     server.run(host="0.0.0.0", port=5000)
